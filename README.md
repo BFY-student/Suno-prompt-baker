@@ -1,13 +1,24 @@
-# Suno Prompt Baker v2.1
+# Suno Prompt Baker v2.2
 
 A comprehensive, research-backed web application for crafting **style prompts** and **lyrics** for [Suno AI](https://suno.com) music generation. Implements 19+ advanced features based on peer-reviewed prompt engineering research.
 
-![Version](https://img.shields.io/badge/version-2.1-orange)
+![Version](https://img.shields.io/badge/version-2.2-orange)
 ![Dark Theme](https://img.shields.io/badge/theme-dark-1a1a2e)
 ![No Build](https://img.shields.io/badge/build-none%20required-green)
 ![Bilingual](https://img.shields.io/badge/language-EN%20%7C%20%E4%B8%AD%E6%96%87-orange)
 
 **No server, no build step — just open `index.html` in your browser.**
+
+---
+
+## What's New in v2.2
+
+- **AI Generate for Theme/Concept/Story** — One-click concept generation in Lyrics Baker, drawing from the generated style prompt and freeform description. Uses temperature 1.2 + rotating creative angles (10 narrative perspectives) to produce varied results on every click.
+- **Suno Settings panel relocated** — Recommended Weirdness/Style Influence values now appear directly above the style prompt textarea (previously below the action buttons), with a more compact inline layout.
+- **Genre-first prompt ordering** — Style prompts now lead with Genre/Era before Mood, matching Suno's left-to-right token weighting for stronger genre fidelity.
+- **Song title genre enforcement** — Lyrics Baker title format (`Genre - Title - VocalType`) now explicitly requires a music genre word (e.g., Reggae, Jazz) — never a mood or emotion word.
+- **Exclusions placeholder fix** — The negative prompt input now shows correct example text instead of a raw i18n key string.
+- **Variable temperature API** — `API.generate()` accepts an optional `options` parameter for per-call temperature control; all existing calls default to 0.8 unchanged.
 
 ---
 
@@ -38,7 +49,7 @@ A comprehensive, research-backed web application for crafting **style prompts** 
 - **Character Counter** — Quality indicators (Optimal <120, Acceptable <200, Poor 200+)
 - **Suno Parameter Guidance** — Genre-specific Weirdness/Style Influence recommendations
 - **Expanded Language Support** — 12 languages including Spanish, Japanese, Korean, Portuguese, German, Hindi, Arabic
-- **Optimized Token Ordering** — Research-backed `[Mood] + [Genre] + [Instruments] + [Production] + [BPM] + [Vocal]` sequence
+- **Optimized Token Ordering** — Research-backed `[Genre] + [Mood] + [Instruments] + [Production] + [BPM] + [Vocal]` sequence
 
 ---
 
@@ -102,7 +113,7 @@ A comprehensive, research-backed web application for crafting **style prompts** 
 **Generation Modes:**
 
 **1. Full Generation**
-Provide theme/concept → complete song with structure and lyrics.
+Provide theme/concept → complete song with structure and lyrics. Use **AI Generate** to auto-create a concept from the style prompt and freeform description (10 rotating creative angles, temperature 1.2 for varied results).
 
 **2. Expand / Complete**
 Paste partial lyrics → AI structures and expands.
@@ -149,10 +160,10 @@ Prevents syllabic hyper-compression in Suno V4/V5.
 
 ### Algorithmic Prompt Formula
 ```
-[Mood] + [Genre/Era] + [Key Instruments (2-3 max)] + [Production] + [BPM] + [Vocal]
+[Genre/Era] + [Mood] + [Key Instruments (2-3 max)] + [Production] + [BPM] + [Vocal]
 ```
 
-NLP tokenizers weight left-to-right — most critical elements (mood, genre) receive maximum computational weighting.
+NLP tokenizers weight left-to-right — genre leads to anchor Suno's style model before emotional coloring is applied.
 
 ### Prompt Layering (Four Layers)
 1. **Foundation** — Genre, BPM, lead instrument
@@ -210,14 +221,14 @@ NLP tokenizers weight left-to-right — most critical elements (mood, genre) rec
 
 ### Style Prompt (Keyword Mode)
 ```
-Melancholic, Indie Folk, Acoustic Guitar, Soft Piano, Clean production, 102 BPM, Female Vocal, Breathy
+Indie Folk, Melancholic, Acoustic Guitar, Soft Piano, Clean production, 102 BPM, Female Vocal, Breathy
 ```
 
 ### Style Prompt (Blueprint Mode)
 ```
-The song opens with a sparse acoustic guitar fingerpicking pattern, establishing a melancholic mood.
-A soft piano enters at the 8-bar mark, adding gentle harmonic support. The female vocal is breathy
-and intimate, locked at 102 BPM with clean production that preserves the organic texture.
+An Indie Folk track built on sparse acoustic guitar fingerpicking, establishing a melancholic mood from
+the first bar. A soft piano enters at the 8-bar mark with gentle harmonic support. The female vocal is
+breathy and intimate, locked at 102 BPM with clean production that preserves the organic texture.
 ```
 
 ### Lyrics with Energy Arc (Section Chain Mode)

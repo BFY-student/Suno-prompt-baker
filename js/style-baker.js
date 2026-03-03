@@ -227,7 +227,7 @@ const StyleBaker = (() => {
 You will receive structured parameters including genre, mood, tempo/BPM, vocal style, vocal texture, instruments organized by register (high/mid/low), production/mix quality, exclusions, era/aesthetic, and a freeform description.
 
 CRITICAL ORDERING RULE - Follow this exact sequence for maximum fidelity:
-[Mood] + [Genre/Era] + [Key Instruments (2-3 max)] + [Production/Mix] + [Exact BPM if provided] + [Vocal Style/Texture]
+[Genre/Era] + [Mood] + [Key Instruments (2-3 max)] + [Production/Mix] + [Exact BPM if provided] + [Vocal Style/Texture]
 
 Rules:
 - Output ONLY the style prompt string, nothing else
@@ -249,7 +249,7 @@ You will receive structured parameters. Your job is to synthesize them into a na
 Blueprint prompting uses narrative prose to map the temporal timeline. This aligns seamlessly with the transformer's sequential processing.
 
 CRITICAL ORDERING RULE - Describe elements in this priority:
-1. Opening mood/atmosphere and genre foundation
+1. Genre foundation and opening atmosphere/mood
 2. Initial instrumentation and tempo/BPM
 3. How the arrangement evolves over time (what enters when)
 4. Production characteristics and spatial qualities
@@ -518,11 +518,11 @@ Suggest 3-5 instruments per register. Use common instrument names. No explanatio
     const params = gatherParams();
     const parts = [];
 
-    // Following optimized ordering per research report
-    if (selectedMoods.length) parts.push(`Mood: ${selectedMoods.join(', ')}`);
+    // Genre first for token-weight priority
     if (selectedGenres.length) parts.push(`Genre: ${selectedGenres.join(', ')}`);
     if (params.subGenre) parts.push(`Sub-genre/Fusion: ${params.subGenre}`);
     if (params.era) parts.push(`Era/Aesthetic: ${params.era}`);
+    if (selectedMoods.length) parts.push(`Mood: ${selectedMoods.join(', ')}`);
 
     // Instruments with register breakdown
     if (params.allInstruments.length) {
@@ -889,17 +889,11 @@ Suggest 3-5 instruments per register. Use common instrument names. No explanatio
     const settings = genreToSunoSettings[genre] || genreToSunoSettings.default;
 
     guidanceContent.innerHTML = `
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px;">
-        <div>
-          <strong style="font-size: 0.85rem; color: var(--text-muted);">Weirdness:</strong>
-          <div style="font-size: 1.1rem; color: var(--text);">${settings.weirdness}</div>
-        </div>
-        <div>
-          <strong style="font-size: 0.85rem; color: var(--text-muted);">Style Influence:</strong>
-          <div style="font-size: 1.1rem; color: var(--text);">${settings.styleInfluence}</div>
-        </div>
+      <div style="display: flex; gap: 16px; align-items: baseline; flex-wrap: wrap;">
+        <span style="font-size: 0.82rem; color: var(--text-muted);">Weirdness: <strong style="color: var(--text);">${settings.weirdness}</strong></span>
+        <span style="font-size: 0.82rem; color: var(--text-muted);">Style Influence: <strong style="color: var(--text);">${settings.styleInfluence}</strong></span>
+        <span style="font-size: 0.82rem; color: var(--text-muted); font-style: italic;">${settings.notes}</span>
       </div>
-      <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); font-style: italic;">${settings.notes}</p>
     `;
 
     guidanceSection.classList.remove('hidden');

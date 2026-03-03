@@ -226,6 +226,16 @@
       <!-- Result -->
       <div class="section result-section hidden" id="style-result-section">
         <div class="section-title" data-i18n="style.result">Generated Style Prompt</div>
+
+        <!-- Suno Parameter Guidance (above textarea) -->
+        <div id="suno-guidance" class="hidden" style="margin-bottom: 10px; padding: 8px 12px; background: var(--bg-elevated); border-radius: 6px; border-left: 3px solid var(--accent);">
+          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent); flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span style="font-size: 0.85rem; font-weight: 600; color: var(--accent);" data-i18n="style.sunoSettings">Recommended Suno Settings</span>
+          </div>
+          <div id="suno-guidance-content"></div>
+        </div>
+
         <textarea class="result-area" id="style-result" rows="4"></textarea>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
           <span id="char-counter" style="font-size: 0.85rem; color: var(--text-muted);"></span>
@@ -246,15 +256,6 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/></svg>
             <span data-i18n="style.compare">Compare</span>
           </button>
-        </div>
-
-        <!-- Suno Parameter Guidance (NEW) -->
-        <div id="suno-guidance" class="hidden" style="margin-top: 16px; padding: 16px; background: var(--bg-elevated); border-radius: 8px; border-left: 3px solid var(--accent);">
-          <h4 style="margin: 0 0 12px 0; font-size: 0.95rem; color: var(--accent);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            <span data-i18n="style.sunoSettings">Recommended Suno Settings</span>
-          </h4>
-          <div id="suno-guidance-content"></div>
         </div>
       </div>
     </div>
@@ -348,7 +349,13 @@
 
         <!-- Full Generation Input -->
         <div class="form-group" id="lyrics-full-input">
-          <label class="form-label" data-i18n="lyrics.conceptLabel">Theme / Concept / Story</label>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label class="form-label" style="margin: 0;" data-i18n="lyrics.conceptLabel">Theme / Concept / Story</label>
+            <button class="btn btn-sm btn-ghost" id="btn-gen-concept" type="button">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 0 1 5 5c0 2.76-2.24 5-5 5s-5-2.24-5-5a5 5 0 0 1 5-5z"/><path d="M12 14l-3 8h6l-3-8z"/></svg>
+              <span data-i18n="lyrics.generateConcept">AI Generate</span>
+            </button>
+          </div>
           <textarea id="lyrics-concept" rows="4" data-i18n-placeholder="lyrics.conceptPlaceholder"></textarea>
         </div>
 

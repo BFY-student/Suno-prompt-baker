@@ -4,7 +4,7 @@ const LyricsBaker = (() => {
 Rules:
 1. The FIRST LINE of your output must be a title in the exact format:
    Genre - Song Title - VocalType
-   where Genre is the primary genre from the style context, Song Title is a creative and fitting name, and VocalType is one of: Male, Female, Duet, or Instrumental (determined from the vocal style or style context). Follow the title with an empty line, then the song.
+   where Genre is the primary MUSIC GENRE from the style context (e.g., Reggae, Jazz, Pop, Electronic, Hip-Hop — never a mood or emotion word like "Melancholic" or "Uplifting"), Song Title is a creative and fitting name, and VocalType is one of: Male, Female, Duet, or Instrumental (determined from the vocal style or style context). Follow the title with an empty line, then the song.
 2. Design a complete song structure appropriate to the style (e.g., Intro, Verse, Pre-Chorus, Chorus, Bridge, Outro). Be creative and genre-appropriate — don't always use the same template.
 3. Specify instrument arrangement per section using square bracket tags. Example:
    [Intro - Soft Piano, Light Strings]
@@ -12,7 +12,7 @@ Rules:
 4. ALL non-lyrical structural and performance instructions must be in square brackets []. This includes section labels, instrument directions, vocal directions, dynamic markings, transitions.
 5. Include vocal performance cues in parentheses within lyrics where useful: (softly), (building intensity), (whisper), (falsetto), (belting).
 6. Distribute instruments thoughtfully across sections to create dynamic contrast and progression. Not every section should be at the same intensity.
-7. Write lyrics in the language specified by the user. Bracket tags, structural directions, and the title line are ALWAYS in English regardless of lyric language.
+7. Write lyrics in the language specified by the user. Bracket tags, structural directions, and the title line are ALWAYS in English regardless of lyric language. Do NOT include translations, transliterations, or romanizations of the lyrics. Output ONLY the lyrics in the specified language.
 8. Output ONLY the title line followed by the formatted song. No explanations, meta-commentary, or notes outside the song itself.
 9. Ensure the song has emotional arc and narrative progression.
 10. Match the lyrical tone, vocabulary, and imagery to the musical style.
@@ -153,6 +153,12 @@ Rules:
       });
     }
 
+    // AI Generate concept button
+    const genConceptBtn = document.getElementById('btn-gen-concept');
+    if (genConceptBtn) {
+      genConceptBtn.addEventListener('click', generateConcept);
+    }
+
     // NEW: Style context change - suggest language from genre
     const styleContext = document.getElementById('lyrics-style-context');
     if (styleContext) {
@@ -233,7 +239,7 @@ Rules:
 
     if (Object.keys(energyMap).length > 0) {
       parts.push(`\nEnergy Arc: ${energyMapStr}`);
-      parts.push('IMPORTANT: Honor this energy progression by inserting [Energy: Low/Medium/High] or [Zenith intensity] tags BEFORE each corresponding section and adjusting arrangement density accordingly. If a section is marked with repetition (e.g., x2, x3), repeat that section the specified number of times.');
+      parts.push('IMPORTANT: Honor this energy progression by inserting [Energy: Low/Medium/High] or [Zenith intensity] tags BEFORE each corresponding section and adjusting arrangement density accordingly. If a section is marked with repetition (e.g., x2, x3), that section should appear the specified number of times throughout the song structure, distributed ORGANICALLY — NOT stacked consecutively. For example, Chorus x2 means the Chorus appears twice in the song (e.g., after Verse 1 and again after Verse 2), Pre-Chorus x2 means Pre-Chorus appears before each Chorus occurrence. Design a natural, professional song structure where repeated sections are woven in at musically appropriate points.');
     }
 
     if (currentMode === 'full') {
@@ -430,14 +436,14 @@ Rules:
       const category = categorySelect.value;
       if (!category) {
         tagSelect.disabled = true;
-        tagSelect.innerHTML = '<option value="">Select tag...</option>';
+        tagSelect.innerHTML = `<option value="">${I18n.t('lyrics.selectTag')}</option>`;
         insertBtn.disabled = true;
         return;
       }
 
       const tags = MetaTags.getCategory(category);
       tagSelect.disabled = false;
-      tagSelect.innerHTML = '<option value="">Select tag...</option>' +
+      tagSelect.innerHTML = `<option value="">${I18n.t('lyrics.selectTag')}</option>` +
         tags.map(t => `<option value="${t.tag}" title="${t.desc}">${t.tag} - ${t.desc}</option>`).join('');
     });
 
@@ -500,7 +506,7 @@ Rules:
 
     fullInput.insertAdjacentHTML('afterend', `
       <div id="chain-controls" style="margin-top: 16px; padding: 16px; background: var(--bg-elevated); border-radius: 8px;">
-        <h4 style="margin: 0 0 12px 0; font-size: 1rem; color: var(--text);">Generate section-by-section</h4>
+        <h4 style="margin: 0 0 12px 0; font-size: 1rem; color: var(--text);">${I18n.t('lyrics.chainTitle')}</h4>
         <div id="chain-progress" style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
           ${chainState.sections.map((sec, idx) => {
             const isCompleted = idx < chainState.currentIndex;
@@ -519,9 +525,9 @@ Rules:
           }).join('')}
         </div>
         <div id="chain-current-section" style="margin-bottom: 12px; font-size: 0.95rem; color: var(--text);">
-          <strong>Current Section:</strong> <span id="chain-current-name">${chainState.sections[chainState.currentIndex]}</span>
+          <strong>${I18n.t('lyrics.chainCurrentSection')}</strong> <span id="chain-current-name">${chainState.sections[chainState.currentIndex]}</span>
         </div>
-        <textarea id="chain-section-concept" rows="3" placeholder="Describe what happens in ${chainState.sections[chainState.currentIndex]}..." style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-family: inherit;"></textarea>
+        <textarea id="chain-section-concept" rows="3" placeholder="${I18n.t('lyrics.chainPlaceholder')}" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-family: inherit;"></textarea>
       </div>
     `);
 
@@ -562,7 +568,7 @@ Rules:
   function selectChainSection(idx) {
     // Only allow selecting current or completed sections
     if (idx > chainState.currentIndex) {
-      showNotification('Please complete previous sections first', 'info');
+      showNotification(I18n.t('lyrics.chainPrevComplete'), 'info');
       return;
     }
 
@@ -583,7 +589,7 @@ Rules:
     const btn = document.getElementById('btn-bake-lyrics');
     const sectionName = chainState.sections[idx];
     const isRegenerate = chainState.sectionResults[idx];
-    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> ${isRegenerate ? 'Regenerate' : 'Generate'} ${sectionName}`;
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> ${isRegenerate ? I18n.t('lyrics.chainRegenerate') : I18n.t('lyrics.chainGenerate')} ${sectionName}`;
     btn.disabled = false;
   }
 
@@ -641,7 +647,7 @@ Output ONLY the ${sectionName} section with appropriate meta-tags, energy tags, 
 
     const btn = document.getElementById('btn-bake-lyrics');
     btn.disabled = true;
-    btn.innerHTML = `<span class="spinner"></span> Generating ${sectionName}...`;
+    btn.innerHTML = `<span class="spinner"></span> ${I18n.t('lyrics.chainGenerating')} ${sectionName}...`;
 
     try {
       const raw = await API.generate(LYRICS_SYSTEM_PROMPT, userPrompt);
@@ -690,9 +696,9 @@ Output ONLY the ${sectionName} section with appropriate meta-tags, energy tags, 
       document.getElementById('chain-section-concept')?.focus();
 
     } catch (e) {
-      showNotification('Error: ' + e.message, 'error');
+      showNotification(I18n.t('lyrics.chainError') + e.message, 'error');
       btn.disabled = false;
-      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> Generate ${sectionName}`;
+      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> ${I18n.t('lyrics.chainGenerate')} ${sectionName}`;
     }
   }
 
@@ -703,14 +709,14 @@ Output ONLY the ${sectionName} section with appropriate meta-tags, energy tags, 
     if (!fullInput) return;
 
     const phaseLabels = [
-      'Phase 1: Generate Phonetic Template',
-      'Phase 2: Lock Melodic Motif',
-      'Phase 3: Inject Semantic Lyrics'
+      I18n.t('lyrics.scaffoldPhase1'),
+      I18n.t('lyrics.scaffoldPhase2'),
+      I18n.t('lyrics.scaffoldPhase3')
     ];
 
     fullInput.insertAdjacentHTML('afterend', `
       <div id="scaffold-controls" style="margin-top: 16px; padding: 16px; background: var(--bg-elevated); border-radius: 8px;">
-        <h4 style="margin: 0 0 12px 0; font-size: 1rem; color: var(--text);">Scaffolding Mode</h4>
+        <h4 style="margin: 0 0 12px 0; font-size: 1rem; color: var(--text);">${I18n.t('lyrics.scaffoldTitle')}</h4>
 
         <!-- Phase Indicator -->
         <div style="display: flex; gap: 8px; margin-bottom: 16px;">
@@ -744,31 +750,31 @@ Output ONLY the ${sectionName} section with appropriate meta-tags, energy tags, 
     if (!desc || !content) return;
 
     if (scaffoldState.phase === 1) {
-      desc.textContent = 'Generate a phonetic scaffold with vowel sounds and syllable patterns to establish rhythm and melody.';
+      desc.textContent = I18n.t('lyrics.scaffoldDesc1');
       content.innerHTML = `
-        <textarea id="scaffold-concept" rows="3" placeholder="Describe the theme and mood of your song..." style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-family: inherit; margin-bottom: 12px;"></textarea>
+        <textarea id="scaffold-concept" rows="3" placeholder="${I18n.t('lyrics.scaffoldConceptPlaceholder')}" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-family: inherit; margin-bottom: 12px;"></textarea>
         <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
-          💡 Example phonetic template: "Ah-oh-ee, ee-ah-oh / Mmm-ah-ee, oh-ee-oh"
+          ${I18n.t('lyrics.scaffoldPhoneticHint')}
         </div>
       `;
     } else if (scaffoldState.phase === 2) {
-      desc.textContent = 'Review and edit the phonetic template. Make adjustments to syllable count and stress patterns.';
+      desc.textContent = I18n.t('lyrics.scaffoldDesc2');
       content.innerHTML = `
-        <label style="display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 8px; color: var(--text);">Phonetic Template:</label>
+        <label style="display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 8px; color: var(--text);">${I18n.t('lyrics.scaffoldTemplateLabel')}</label>
         <textarea id="scaffold-template" rows="8" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-family: var(--font-mono); margin-bottom: 12px;">${escapeHtml(scaffoldState.phoneticTemplate)}</textarea>
         <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
-          Edit the template above if needed, then click "Lock & Continue" to proceed.
+          ${I18n.t('lyrics.scaffoldLockHint')}
         </div>
       `;
     } else if (scaffoldState.phase === 3) {
-      desc.textContent = 'Generate meaningful lyrics that match the locked syllable count and rhythm structure.';
+      desc.textContent = I18n.t('lyrics.scaffoldDesc3');
       content.innerHTML = `
         <div style="padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 12px;">
-          <div style="font-weight: 600; margin-bottom: 8px; color: var(--text);">Locked Template:</div>
+          <div style="font-weight: 600; margin-bottom: 8px; color: var(--text);">${I18n.t('lyrics.scaffoldLockedLabel')}</div>
           <pre style="font-size: 0.85rem; color: var(--text-muted); margin: 0; white-space: pre-wrap; font-family: var(--font-mono);">${escapeHtml(scaffoldState.lockedTemplate)}</pre>
         </div>
         <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
-          Now generating lyrics that match the syllable count and rhythm...
+          ${I18n.t('lyrics.scaffoldSemanticHint')}
         </div>
       `;
     }
@@ -805,7 +811,7 @@ Output ONLY the ${sectionName} section with appropriate meta-tags, energy tags, 
     const styleContext = document.getElementById('lyrics-style-context')?.value?.trim() || '';
 
     if (!concept) {
-      showNotification('Please describe your song theme', 'error');
+      showNotification(I18n.t('lyrics.scaffoldThemeRequired'), 'error');
       return;
     }
 
@@ -836,7 +842,7 @@ Generate a phonetic scaffold for this song. Create vowel sound patterns that est
 
     const btn = document.getElementById('btn-bake-lyrics');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Generating phonetic template...';
+    btn.innerHTML = `<span class="spinner"></span> ${I18n.t('lyrics.scaffoldGeneratingPhonetic')}`;
 
     try {
       const result = await API.generate(systemPrompt, userPrompt);
@@ -846,21 +852,21 @@ Generate a phonetic scaffold for this song. Create vowel sound patterns that est
       hideScaffoldControls();
       renderScaffoldControls();
 
-      btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg> Lock & Continue';
+      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg> ${I18n.t('lyrics.scaffoldLockBtn')}`;
       btn.disabled = false;
 
-      showNotification('Phonetic template generated! Review and edit if needed.', 'success');
+      showNotification(I18n.t('lyrics.scaffoldPhoneticDone'), 'success');
     } catch (e) {
-      showNotification('Error: ' + e.message, 'error');
+      showNotification(I18n.t('lyrics.chainError') + e.message, 'error');
       btn.disabled = false;
-      btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> Generate Phonetic Template';
+      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> ${I18n.t('lyrics.scaffoldGenPhonetic')}`;
     }
   }
 
   function lockTemplate() {
     const template = document.getElementById('scaffold-template')?.value || '';
     if (!template.trim()) {
-      showNotification('Template is empty', 'error');
+      showNotification(I18n.t('lyrics.scaffoldTemplateEmpty'), 'error');
       return;
     }
 
@@ -872,10 +878,10 @@ Generate a phonetic scaffold for this song. Create vowel sound patterns that est
     renderScaffoldControls();
 
     const btn = document.getElementById('btn-bake-lyrics');
-    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> Generate Lyrics';
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> ${I18n.t('lyrics.scaffoldGenLyrics')}`;
     btn.disabled = false;
 
-    showNotification('Template locked! Ready to generate semantic lyrics.', 'success');
+    showNotification(I18n.t('lyrics.scaffoldLocked'), 'success');
   }
 
   async function generateSemanticLyrics() {
@@ -910,7 +916,7 @@ Generate lyrics that match this template's syllable count line-by-line while exp
 
     const btn = document.getElementById('btn-bake-lyrics');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Generating semantic lyrics...';
+    btn.innerHTML = `<span class="spinner"></span> ${I18n.t('lyrics.scaffoldGeneratingSemantic')}`;
 
     try {
       const result = await API.generate(systemPrompt, userPrompt);
@@ -937,15 +943,15 @@ Generate lyrics that match this template's syllable count line-by-line while exp
         concept
       });
 
-      showNotification('Scaffolding complete! Lyrics generated.', 'success');
+      showNotification(I18n.t('lyrics.scaffoldComplete'), 'success');
 
-      btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> Regenerate Lyrics';
+      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> ${I18n.t('lyrics.scaffoldRegenLyrics')}`;
       btn.disabled = false;
 
     } catch (e) {
-      showNotification('Error: ' + e.message, 'error');
+      showNotification(I18n.t('lyrics.chainError') + e.message, 'error');
       btn.disabled = false;
-      btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> Generate Lyrics';
+      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> ${I18n.t('lyrics.scaffoldGenLyrics')}`;
     }
   }
 
@@ -965,6 +971,64 @@ Generate lyrics that match this template's syllable count line-by-line while exp
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+  }
+
+  // Creative angles rotated on each call to push concept variety
+  const CONCEPT_ANGLES = [
+    'Tell it from an unexpected narrator (an object, a place, a memory, a stranger watching from afar).',
+    'Ground it in a single, hyper-specific moment or sensory detail rather than a broad emotion.',
+    'Frame it as a contradiction or paradox — two opposing feelings held at once.',
+    'Use a metaphor from nature, science, or an everyday object to carry the emotional weight.',
+    'Build it around a turning point: the last time, the first time, or the moment just before everything changed.',
+    'Let time be unstable — mix past, present, and imagined futures together.',
+    'Focus on what is left unsaid, absent, or just out of reach.',
+    'Center it on a relationship between two people, but told entirely through one detail they share.',
+    'Make the setting (city, season, time of day) do the emotional heavy lifting.',
+    'Treat the music style itself as a character or a world the protagonist inhabits.'
+  ];
+
+  async function generateConcept() {
+    if (!API.isConfigured()) {
+      showNotification(I18n.t('settings.noProvider'), 'error');
+      return;
+    }
+
+    const styleContext = document.getElementById('lyrics-style-context')?.value?.trim() || '';
+    const freeform = document.getElementById('freeform-input')?.value?.trim() || '';
+
+    if (!styleContext && !freeform) {
+      showNotification(I18n.t('errors.emptyInput'), 'error');
+      return;
+    }
+
+    const btn = document.getElementById('btn-gen-concept');
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner"></span>`;
+
+    // Pick a random creative angle to vary each generation
+    const angle = CONCEPT_ANGLES[Math.floor(Math.random() * CONCEPT_ANGLES.length)];
+
+    const systemPrompt = `You are a creative songwriter and storyteller. Generate a compelling song theme/concept/story idea based on the music style and description provided. Output ONLY the concept/story idea in 2-4 sentences. Be specific, evocative, and emotionally resonant. Match the emotional tone to the musical genre — but approach the idea from this angle: ${angle} No labels, headers, or meta-commentary.`;
+
+    const parts = [];
+    if (styleContext) parts.push(`Music Style: ${styleContext}`);
+    if (freeform) parts.push(`Free Description: ${freeform}`);
+    parts.push('\nGenerate a creative song theme/concept/story idea for this music.');
+
+    try {
+      const result = await API.generate(systemPrompt, parts.join('\n\n'), { temperature: 1.2 });
+      const conceptArea = document.getElementById('lyrics-concept');
+      if (conceptArea) {
+        conceptArea.value = sanitizeOutput(result);
+      }
+      showNotification(I18n.t('lyrics.conceptGenerated'), 'success');
+    } catch (e) {
+      showNotification(I18n.t('errors.apiError') + e.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalHTML;
+    }
   }
 
   return { init, loadFromHistory };

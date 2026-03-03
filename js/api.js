@@ -108,7 +108,7 @@ const API = (() => {
     return true;
   }
 
-  async function generate(systemPrompt, userPrompt) {
+  async function generate(systemPrompt, userPrompt, options = {}) {
     const config = loadConfig();
     if (!config.active) {
       throw new Error('No active API provider configured');
@@ -119,14 +119,14 @@ const API = (() => {
     }
 
     if (config.active === 'openai' || config.active === 'local') {
-      return await generateOpenAI(provider, systemPrompt, userPrompt);
+      return await generateOpenAI(provider, systemPrompt, userPrompt, options);
     } else if (config.active === 'gemini') {
-      return await generateGemini(provider, systemPrompt, userPrompt);
+      return await generateGemini(provider, systemPrompt, userPrompt, options);
     }
     throw new Error('Unknown provider type');
   }
 
-  async function generateOpenAI(provider, systemPrompt, userPrompt) {
+  async function generateOpenAI(provider, systemPrompt, userPrompt, options = {}) {
     const url = `${provider.baseUrl.replace(/\/+$/, '')}/chat/completions`;
     const resp = await fetch(url, {
       method: 'POST',
@@ -140,7 +140,7 @@ const API = (() => {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        temperature: 0.8
+        temperature: options.temperature ?? 0.8
       })
     });
     if (!resp.ok) {
@@ -151,7 +151,7 @@ const API = (() => {
     return data.choices?.[0]?.message?.content?.trim() || '';
   }
 
-  async function generateGemini(provider, systemPrompt, userPrompt) {
+  async function generateGemini(provider, systemPrompt, userPrompt, options = {}) {
     const baseUrl = provider.baseUrl.replace(/\/+$/, '');
     const url = `${baseUrl}/v1beta/models/${provider.model}:generateContent?key=${provider.apiKey}`;
     const resp = await fetch(url, {
@@ -160,7 +160,7 @@ const API = (() => {
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: systemPrompt }] },
         contents: [{ parts: [{ text: userPrompt }] }],
-        generationConfig: { temperature: 0.8 }
+        generationConfig: { temperature: options.temperature ?? 0.8 }
       })
     });
     if (!resp.ok) {
