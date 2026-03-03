@@ -99,6 +99,30 @@ const StyleBaker = (() => {
     'Classical': { weirdness: '20-40%', styleInfluence: '85%', notes: 'Low weirdness, high fidelity to style' },
     'Hip-Hop': { weirdness: '25-45%', styleInfluence: '80%', notes: 'Controlled structure for rhythmic precision' },
     'Drill': { weirdness: '30%', styleInfluence: '80%', notes: 'Tight structure for drill characteristics' },
+    'R&B': { weirdness: '25-40%', styleInfluence: '80-85%', notes: 'Smooth structure, moderate control' },
+    'Folk': { weirdness: '20-40%', styleInfluence: '80%', notes: 'Low weirdness for organic acoustic feel' },
+    'Country': { weirdness: '15-35%', styleInfluence: '85%', notes: 'Conservative settings for traditional structure' },
+    'Latin': { weirdness: '30-50%', styleInfluence: '80%', notes: 'Moderate weirdness for rhythmic diversity' },
+    'Reggae': { weirdness: '30-45%', styleInfluence: '80%', notes: 'Steady groove, moderate control' },
+    'Blues': { weirdness: '25-45%', styleInfluence: '80%', notes: 'Classic feel, controlled improvisation' },
+    'Metal': { weirdness: '40-60%', styleInfluence: '75-80%', notes: 'Higher weirdness for aggressive textures' },
+    'Punk': { weirdness: '35-55%', styleInfluence: '75%', notes: 'Raw energy, moderate experimentation' },
+    'Indie': { weirdness: '45-65%', styleInfluence: '70-75%', notes: 'Higher weirdness for unique character' },
+    'Lo-fi': { weirdness: '50-70%', styleInfluence: '65-75%', notes: 'Embrace imperfections and texture' },
+    'Chanson': { weirdness: '20-35%', styleInfluence: '85%', notes: 'Traditional structure, high style fidelity' },
+    'Bossa Nova': { weirdness: '25-40%', styleInfluence: '85%', notes: 'Gentle feel, high fidelity to style' },
+    'Soul': { weirdness: '25-40%', styleInfluence: '80-85%', notes: 'Warm classic feel, controlled groove' },
+    'Funk': { weirdness: '35-55%', styleInfluence: '75-80%', notes: 'Groove-focused, moderate experimentation' },
+    'Gospel': { weirdness: '20-35%', styleInfluence: '85%', notes: 'Traditional structure, powerful delivery' },
+    'World': { weirdness: '50-70%', styleInfluence: '65-75%', notes: 'Higher weirdness for ethnic textures' },
+    'K-Pop': { weirdness: '30-50%', styleInfluence: '80-85%', notes: 'Polished production, structured hooks' },
+    'Disco': { weirdness: '25-40%', styleInfluence: '80-85%', notes: 'Danceable groove, classic structure' },
+    'House': { weirdness: '45-65%', styleInfluence: '75%', notes: 'Moderate weirdness for dance floor energy' },
+    'Trap': { weirdness: '30-50%', styleInfluence: '80%', notes: 'Hard-hitting, controlled bass patterns' },
+    'Grunge': { weirdness: '40-60%', styleInfluence: '75%', notes: 'Raw texture, moderate experimentation' },
+    'Ska': { weirdness: '30-45%', styleInfluence: '80%', notes: 'Upbeat rhythms, steady structure' },
+    'Afrobeat': { weirdness: '35-55%', styleInfluence: '75-80%', notes: 'Polyrhythmic complexity, groove-driven' },
+    'Dancehall': { weirdness: '30-50%', styleInfluence: '80%', notes: 'Rhythmic precision, Caribbean feel' },
     'default': { weirdness: '60%', styleInfluence: '80-85%', notes: 'Optimal balance per research' }
   };
 
@@ -227,15 +251,15 @@ const StyleBaker = (() => {
 You will receive structured parameters including genre, mood, tempo/BPM, vocal style, vocal texture, instruments organized by register (high/mid/low), production/mix quality, exclusions, era/aesthetic, and a freeform description.
 
 CRITICAL ORDERING RULE - Follow this exact sequence for maximum fidelity:
-[Genre/Era] + [Mood] + [Key Instruments (2-3 max)] + [Production/Mix] + [Exact BPM if provided] + [Vocal Style/Texture]
+[Genre/Era] + [Mood] + [All Key Instruments] + [Production/Mix] + [Exact BPM if provided] + [Vocal Style/Texture]
 
 Rules:
 - Output ONLY the style prompt string, nothing else
 - Use comma-separated descriptive tags
-- Be concise but specific - target under 120 characters for optimal results
+- Be concise but specific - target under 200 characters for optimal results
 - Always output in English
 - Place the most important elements (mood, genre) at the BEGINNING for maximum token weight
-- Limit to 2-3 core instruments to prevent muddy frequency separation
+- Include ALL instruments the user selected — do not drop or summarize them
 - Include production characteristics for Technical Layer completeness
 - If exclusions are provided, integrate them naturally (e.g., "no vocals" or prefix with [Instrumental])
 - When BPM is specified, include the exact number (e.g., "128 BPM") rather than qualitative terms
@@ -250,7 +274,7 @@ Blueprint prompting uses narrative prose to map the temporal timeline. This alig
 
 CRITICAL ORDERING RULE - Describe elements in this priority:
 1. Genre foundation and opening atmosphere/mood
-2. Initial instrumentation and tempo/BPM
+2. Initial instrumentation and tempo/BPM — include ALL instruments the user selected
 3. How the arrangement evolves over time (what enters when)
 4. Production characteristics and spatial qualities
 5. Vocal characteristics (if applicable)
@@ -258,6 +282,7 @@ CRITICAL ORDERING RULE - Describe elements in this priority:
 Rules:
 - Output ONLY the narrative paragraph, nothing else
 - Use flowing, descriptive prose (2-4 sentences)
+- Include ALL instruments the user selected — weave every one into the narrative, do not drop any
 - Describe the sonic evolution chronologically: "The beat begins sparsely with... As the pre-chorus arrives... The chorus explodes with..."
 - Target 100-150 words for optimal transformer processing
 - Always output in English
@@ -292,6 +317,7 @@ Suggest 3-5 instruments per register. Use common instrument names. No explanatio
       selectedGenres = selected;
       checkValidationWarnings(); // NEW
       showGenreInstrumentSuggestion(); // NEW
+      showSunoGuidance(); // Update Suno settings on genre change
     });
     renderChipGroup('mood-chips', moods, selectedMoods, (item, selected) => {
       selectedMoods = selected;
