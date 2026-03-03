@@ -11,6 +11,11 @@ const API = (() => {
       baseUrl: 'https://generativelanguage.googleapis.com',
       apiKey: '',
       model: 'gemini-2.0-flash'
+    },
+    local: {
+      baseUrl: 'http://localhost:11434/v1',
+      apiKey: 'ollama',
+      model: 'llama3.2'
     }
   };
 
@@ -22,7 +27,8 @@ const API = (() => {
     return {
       providers: {
         openai: { ...defaults.openai },
-        gemini: { ...defaults.gemini }
+        gemini: { ...defaults.gemini },
+        local: { ...defaults.local }
       },
       active: ''
     };
@@ -55,7 +61,7 @@ const API = (() => {
       throw new Error('API key not set');
     }
 
-    if (providerType === 'openai') {
+    if (providerType === 'openai' || providerType === 'local') {
       return await testOpenAI(provider);
     } else if (providerType === 'gemini') {
       return await testGemini(provider);
@@ -112,7 +118,7 @@ const API = (() => {
       throw new Error('API key not configured');
     }
 
-    if (config.active === 'openai') {
+    if (config.active === 'openai' || config.active === 'local') {
       return await generateOpenAI(provider, systemPrompt, userPrompt);
     } else if (config.active === 'gemini') {
       return await generateGemini(provider, systemPrompt, userPrompt);

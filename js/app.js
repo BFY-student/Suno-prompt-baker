@@ -98,6 +98,25 @@ const App = (() => {
     // Test connections
     document.getElementById('btn-test-openai')?.addEventListener('click', () => testProvider('openai'));
     document.getElementById('btn-test-gemini')?.addEventListener('click', () => testProvider('gemini'));
+    document.getElementById('btn-test-local')?.addEventListener('click', () => testProvider('local'));
+  }
+
+  const PROVIDER_LABELS = {
+    openai: 'OpenAI',
+    gemini: 'Gemini',
+    local: 'Local LLM'
+  };
+
+  function updateProviderBadge() {
+    const badge = document.getElementById('active-provider-badge');
+    if (!badge) return;
+    const active = API.getActiveProvider();
+    if (active && PROVIDER_LABELS[active]) {
+      badge.textContent = PROVIDER_LABELS[active];
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
   }
 
   function loadSettings() {
@@ -112,10 +131,15 @@ const App = (() => {
     document.getElementById('gemini-api-key').value = p.gemini?.apiKey || '';
     document.getElementById('gemini-model').value = p.gemini?.model || API.defaults.gemini.model;
 
+    document.getElementById('local-base-url').value = p.local?.baseUrl || API.defaults.local.baseUrl;
+    document.getElementById('local-api-key').value = p.local?.apiKey || API.defaults.local.apiKey;
+    document.getElementById('local-model').value = p.local?.model || API.defaults.local.model;
+
     const activeRadios = document.querySelectorAll('input[name="active-provider"]');
     activeRadios.forEach(r => {
       r.checked = r.value === config.active;
     });
+    updateProviderBadge();
   }
 
   function saveSettings() {
@@ -130,11 +154,17 @@ const App = (() => {
           baseUrl: document.getElementById('gemini-base-url').value.trim(),
           apiKey: document.getElementById('gemini-api-key').value.trim(),
           model: document.getElementById('gemini-model').value.trim()
+        },
+        local: {
+          baseUrl: document.getElementById('local-base-url').value.trim(),
+          apiKey: document.getElementById('local-api-key').value.trim(),
+          model: document.getElementById('local-model').value.trim()
         }
       },
       active: document.querySelector('input[name="active-provider"]:checked')?.value || ''
     };
     API.saveConfig(config);
+    updateProviderBadge();
     showNotification(I18n.t('settings.saved'), 'success');
   }
 

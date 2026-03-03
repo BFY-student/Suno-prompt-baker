@@ -8,9 +8,9 @@
   --text-primary: #e8e8ed;
   --text-secondary: #9898a6;
   --text-muted: #6b6b7b;
-  --accent: #7c5cfc;
-  --accent-hover: #6a48e6;
-  --accent-glow: rgba(124, 92, 252, 0.25);
+  --accent: #f97316;
+  --accent-hover: #ea6c0a;
+  --accent-glow: rgba(249, 115, 22, 0.25);
   --success: #34d399;
   --error: #f87171;
   --warning: #fbbf24;
@@ -71,7 +71,7 @@ body {
 .app-logo h1 {
   font-size: 1.35rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  background: linear-gradient(135deg, var(--accent), #fb923c);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -209,6 +209,31 @@ body {
 .btn-lang:hover {
   color: var(--text-primary);
   border-color: var(--accent);
+}
+
+/* ===== Active Provider Badge (header) ===== */
+.provider-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  background: var(--accent-glow);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+.provider-badge::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
 }
 
 /* ===== Form Elements ===== */
@@ -591,7 +616,7 @@ select {
   border-radius: 4px;
 }
 .badge-style {
-  background: rgba(124, 92, 252, 0.2);
+  background: rgba(249, 115, 22, 0.2);
   color: var(--accent);
 }
 .badge-lyrics {
@@ -787,7 +812,7 @@ select {
 .template-card:hover {
   border-color: var(--accent);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(124, 92, 252, 0.15);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
 }
 .template-card h3 {
   margin: 0 0 8px 0;
