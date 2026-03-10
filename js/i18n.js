@@ -41,7 +41,8 @@ const I18n = (() => {
         bake: "Bake Style", baking: "Baking...", result: "Generated Style Prompt",
         copy: "Copy", copied: "Copied!", regenerate: "Regenerate", passToLyrics: "Passed to Lyrics Baker",
         compare: "Compare",
-        sunoSettings: "Recommended Suno Settings"
+        sunoSettings: "Recommended Suno Settings",
+        gotoLyrics: "Go to Lyrics Baker"
       },
       lyrics: {
         title: "Lyrics & Arrangement Baker", mode: "Generation Mode", modeFull: "Full Generation", modeExpand: "Expand / Complete",
@@ -67,6 +68,7 @@ const I18n = (() => {
         sectionComplete: "complete! Continue to next section.",
         copy: "Copy", copied: "Copied!", regenerate: "Regenerate",
         compare: "Compare",
+        gotoMelody: "Go to Melody Baker",
         styleCopied: "Style copied to clipboard!",
         lyricsCopied: "Lyrics copied to clipboard!",
         // Chain mode
@@ -233,7 +235,8 @@ const I18n = (() => {
         bake: "烘焙风格", baking: "烘焙中...", result: "生成的风格提示词",
         copy: "复制", copied: "已复制！", regenerate: "重新生成", passToLyrics: "已传递到歌词模块",
         compare: "对比",
-        sunoSettings: "推荐的 Suno 设置"
+        sunoSettings: "推荐的 Suno 设置",
+        gotoLyrics: "前往歌词烘焙"
       },
       lyrics: {
         title: "歌词与编曲烘焙", mode: "生成模式", modeFull: "完整生成", modeExpand: "扩展 / 补全",
@@ -259,6 +262,7 @@ const I18n = (() => {
         sectionComplete: "已完成！继续下一段落。",
         copy: "复制", copied: "已复制！", regenerate: "重新生成",
         compare: "对比",
+        gotoMelody: "前往旋律烘焙",
         styleCopied: "风格已复制到剪贴板！",
         lyricsCopied: "歌词已复制到剪贴板！",
         // Chain mode

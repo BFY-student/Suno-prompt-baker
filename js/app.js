@@ -48,6 +48,9 @@ const App = (() => {
         switchTab(btn.getAttribute('data-tab'));
       });
     });
+
+    document.getElementById('btn-goto-lyrics')?.addEventListener('click', () => switchTab('lyrics'));
+    document.getElementById('btn-goto-melody')?.addEventListener('click', () => switchTab('melody'));
   }
 
   function switchTab(tabName) {

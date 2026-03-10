@@ -18,7 +18,8 @@ Rules:
 10. Match the lyrical tone, vocabulary, and imagery to the musical style.
 11. NEVER use the word "skank" or its variants — it is banned by Suno. Use "offbeat strum", "ska rhythm", or "upstroke guitar" instead when describing ska/reggae techniques.
 12. DSP/Processing Instructions - Asterisk Notation: For any DSP processing instructions (filters, effects, audio processing), wrap them in ASTERISKS to prevent Suno from attempting to sing them phonetically. CORRECT: (*Low Pass Filter*), (*Reverb Tail*), (*Sidechain Pump*), (*Tape Saturation*). INCORRECT: [Low Pass Filter], (Low Pass Filter). This signals the NLP parser to treat these as processing commands rather than lyrics.
-13. Energy Arc Progression: When an Energy Arc is provided, strictly follow the energy levels. Insert the appropriate [Energy: Low/Medium/High] or [Zenith intensity] tag BEFORE each section label and adjust arrangement density accordingly. [Energy: Low] = sparse arrangement, minimal instrumentation, quiet dynamics. [Energy: Medium] = moderate fullness, balanced mix. [Energy: High] = maximum frequency saturation, full instrumentation. [Zenith intensity] = peak climactic moment.`;
+13. Energy Arc Progression: When an Energy Arc is provided, strictly follow the energy levels. Insert the appropriate [Energy: Low/Medium/High] or [Zenith intensity] tag BEFORE each section label and adjust arrangement density accordingly. [Energy: Low] = sparse arrangement, minimal instrumentation, quiet dynamics. [Energy: Medium] = moderate fullness, balanced mix. [Energy: High] = maximum frequency saturation, full instrumentation. [Zenith intensity] = peak climactic moment.
+14. NEVER embed technical production or style-descriptor terms (e.g., reverb, BPM, fingerpicking, 808, synth pad, lo-fi, distortion, tape saturation) inside actual lyric lines. These words describe music production — they belong only in square-bracket arrangement tags or asterisk DSP notations, never in the sung text. Lyrics must contain human emotions, stories, imagery, metaphors, and characters.`;
 
   let currentMode = 'full';
 
@@ -210,7 +211,7 @@ Rules:
     const parts = [];
 
     if (styleContext) {
-      parts.push(`Musical Style: ${styleContext}`);
+      parts.push(`Musical Style Context (use for genre, emotional tone, and arrangement reference — do NOT echo production/technical terms from this into the lyrics text): ${styleContext}`);
     }
 
     if (instrumental) {
@@ -1009,12 +1010,23 @@ Generate lyrics that match this template's syllable count line-by-line while exp
     // Pick a random creative angle to vary each generation
     const angle = CONCEPT_ANGLES[Math.floor(Math.random() * CONCEPT_ANGLES.length)];
 
-    const systemPrompt = `You are a creative songwriter and storyteller. Generate a compelling song theme/concept/story idea based on the music style and description provided. Output ONLY the concept/story idea in 2-4 sentences. Be specific, evocative, and emotionally resonant. Match the emotional tone to the musical genre — but approach the idea from this angle: ${angle} No labels, headers, or meta-commentary.`;
+    const systemPrompt = `You are a creative songwriter and storyteller. Your job is to generate a compelling song theme/concept/story idea in two internal steps:
+
+Step 1 — Analyze the style: From the music style tags or description provided, identify: (a) the core music genre, (b) the emotional atmosphere it evokes (e.g., wistful, euphoric, gritty, tender, chaotic), (c) the world or human experience this music inhabits.
+
+Step 2 — Generate the concept: Using your analysis from Step 1, craft a specific, evocative 2–4 sentence story or theme idea that feels native to this genre and emotional world. The concept must be about human emotions, characters, stories, or vivid scenes.
+
+CRITICAL OUTPUT RULES:
+- Output ONLY the 2–4 sentence concept. Nothing else.
+- NEVER echo back production/technical terms from the style tags (e.g., reverb, BPM, fingerpicking, 808, synth, lo-fi, distortion, sidechain). Those describe the music, not the story.
+- Do NOT mention the genre name or style descriptors literally — let the emotional world speak.
+- Approach the concept from this creative angle: ${angle}
+- No labels, headers, or meta-commentary.`;
 
     const parts = [];
-    if (styleContext) parts.push(`Music Style: ${styleContext}`);
-    if (freeform) parts.push(`Free Description: ${freeform}`);
-    parts.push('\nGenerate a creative song theme/concept/story idea for this music.');
+    if (styleContext) parts.push(`Music style tags (analyze genre + emotional character, do NOT echo these terms into the concept):\n${styleContext}`);
+    if (freeform) parts.push(`Additional context from user:\n${freeform}`);
+    parts.push('\nGenerate the song theme/concept/story idea.');
 
     try {
       const result = await API.generate(systemPrompt, parts.join('\n\n'), { temperature: 1.2 });
