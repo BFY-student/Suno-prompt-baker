@@ -1,8 +1,8 @@
-# Suno Prompt Baker v2.2
+# Suno Prompt Baker v2.3
 
-A comprehensive, research-backed web application for crafting **style prompts** and **lyrics** for [Suno AI](https://suno.com) music generation. Implements 19+ advanced features based on peer-reviewed prompt engineering research.
+A comprehensive, research-backed web application for crafting **style prompts**, **lyrics**, and **generating songs** with [Suno AI](https://suno.com). Implements 19+ advanced features based on peer-reviewed prompt engineering research.
 
-![Version](https://img.shields.io/badge/version-2.2-orange)
+![Version](https://img.shields.io/badge/version-2.3-orange)
 ![Dark Theme](https://img.shields.io/badge/theme-dark-1a1a2e)
 ![No Build](https://img.shields.io/badge/build-none%20required-green)
 ![Bilingual](https://img.shields.io/badge/language-EN%20%7C%20%E4%B8%AD%E6%96%87-orange)
@@ -11,45 +11,49 @@ A comprehensive, research-backed web application for crafting **style prompts** 
 
 ---
 
+## What's New in v2.3
+
+- **Melody Baker** — Full song generation tab powered by Suno's Custom Mode API (`chirp-v5`). Auto-fills title, style, and lyrics from previous Style Baker and Lyrics Baker outputs. Generates 2 tracks, streams audio in-browser, and auto-downloads WAV files with staggered timing to avoid browser blocking prompts.
+- **Song History** — Generated songs are saved to History with their task ID. Clicking "Download WAV" in History re-fetches clip IDs and downloads directly from `cdn1.suno.ai`.
+- **Vocal ordering fix** — Vocal style/texture now appears **2nd** in the style prompt (immediately after genre), not last. Suno's NLP tokenizer weights early tokens more heavily — placing vocals last in a long string caused them to be ignored, producing wrong-gender results.
+- **Vocal-first safety reorder** — Melody Baker automatically moves vocal keywords to position 2 in the tags string before submitting, fixing any already-baked prompts that used the old ordering.
+- **Chinese translation for Melody Baker** — All Melody Baker labels, statuses, and notifications are fully translated for 中文 mode.
+
+---
+
 ## What's New in v2.2
 
 - **AI Generate for Theme/Concept/Story** — One-click concept generation in Lyrics Baker, drawing from the generated style prompt and freeform description. Uses temperature 1.2 + rotating creative angles (10 narrative perspectives) to produce varied results on every click.
-- **Suno Settings panel relocated** — Recommended Weirdness/Style Influence values now appear directly above the style prompt textarea (previously below the action buttons), with a more compact inline layout.
+- **Suno Settings panel relocated** — Recommended Weirdness/Style Influence values now appear directly above the style prompt textarea, with a compact inline layout.
 - **Genre-first prompt ordering** — Style prompts now lead with Genre/Era before Mood, matching Suno's left-to-right token weighting for stronger genre fidelity.
-- **Song title genre enforcement** — Lyrics Baker title format (`Genre - Title - VocalType`) now explicitly requires a music genre word (e.g., Reggae, Jazz) — never a mood or emotion word.
-- **Exclusions placeholder fix** — The negative prompt input now shows correct example text instead of a raw i18n key string.
-- **Variable temperature API** — `API.generate()` accepts an optional `options` parameter for per-call temperature control; all existing calls default to 0.8 unchanged.
+- **Song title genre enforcement** — Lyrics Baker title format (`Genre - Title - VocalType`) now explicitly requires a music genre word — never a mood or emotion word.
+- **Variable temperature API** — `API.generate()` accepts an optional `options` parameter for per-call temperature control.
 
 ---
 
 ## What's New in v2.1
 
-- **Local LLM support** — Connect to Ollama or LM Studio with pre-filled base URL (`http://localhost:11434/v1`) and API key (`ollama`). No cloud API key required.
+- **Local LLM support** — Connect to Ollama or LM Studio with pre-filled base URL and API key. No cloud API key required.
 - **Active provider badge** — The currently selected provider is shown in the top-right corner of the header at all times.
-- **Settings UX** — Active provider selector and Save button are now at the top of the settings dialog for faster switching.
 - **Suno orange theme** — UI accent color updated to match Suno's brand orange.
 
 ---
 
 ## What's New in v2.0
 
-### Research-Backed Enhancements
 - **Scaffolding Mode** — 3-phase phonetic workflow to prevent syllabic compression
 - **Section Chain Mode** — Generate lyrics section-by-section with editable progress
 - **Energy Arc Mapping** — Control dynamic progression with repetition counts
 - **Exact BPM Control** — Mathematical rhythmic grid locking (40–220 BPM)
 - **Production/Mix Layer** — 20 professional mastering characteristics with tooltips
 - **Blueprint Prompting** — Narrative prose mode for V4.5/V5 transformer processing
-- **Template Library** — 5 pre-built case study templates (Pop, Electronic, Cinematic, Drill, Ambient)
+- **Template Library** — 5 pre-built case study templates
 - **Voice Type & Character** — Reorganized vocals: Type (gender/delivery) + Character (tone/texture)
 - **Meta-Tag Palette** — 60+ insertable tags across 6 categories
 - **Version Comparison** — A/B testing with parameter diff highlighting
-- **Custom Instruments** — Add instruments not in the preset list with + buttons
+- **Custom Instruments** — Add instruments not in the preset list
 - **Real-Time Validation** — Overstuffing warnings, conflict detection, vagueness checking
 - **Character Counter** — Quality indicators (Optimal <120, Acceptable <200, Poor 200+)
-- **Suno Parameter Guidance** — Genre-specific Weirdness/Style Influence recommendations
-- **Expanded Language Support** — 12 languages including Spanish, Japanese, Korean, Portuguese, German, Hindi, Arabic
-- **Optimized Token Ordering** — Research-backed `[Genre] + [Mood] + [Instruments] + [Production] + [BPM] + [Vocal]` sequence
 
 ---
 
@@ -72,7 +76,7 @@ A comprehensive, research-backed web application for crafting **style prompts** 
 
 4. **Style Baker** → Select parameters → "Bake Style"
 5. **Lyrics Baker** → Choose mode → "Bake Lyrics"
-6. **Copy & Paste** into Suno
+6. **Melody Baker** → Add Suno API key → "Generate Song" *(auto-filled from steps 4–5)*
 
 ---
 
@@ -87,23 +91,20 @@ A comprehensive, research-backed web application for crafting **style prompts** 
 - **Voice Character** — Tone quality and texture (Gritty/Breathy/Warm/etc.) — *optional*
 - **Instruments** — Organized by register (High/Mid/Low) with search + AI suggestions
 - **Custom Instruments** — Add your own with **+** buttons
-- **Production/Mix Quality** — 20 characteristics (Tape saturated, Wide stereo, etc.) with hover tooltips
-- **Exclusions** — Negative prompt filtering (e.g., "no vocals, no piano")
+- **Production/Mix Quality** — 20 characteristics with hover tooltips
+- **Exclusions** — Negative prompt filtering
 - **Era/Aesthetic** — Vintage, 80s, Modern, etc.
 
 **Advanced:**
-- **Prompt Mode Toggle:**
-  - **Keyword Mode** (Classic) — Comma-separated tags, optimized ordering
-  - **Blueprint Mode** (Narrative) — Prose descriptions for V4.5/V5
+- **Prompt Mode Toggle:** Keyword (Classic) or Blueprint (Narrative prose for V4.5/V5)
 - **Template Library** — Load pre-built templates for common genres
-- **Genre Presets** — One-click instrument loading (11 genres)
 - **Real-Time Validation** — Warns against overstuffing, conflicts, vague terms
 - **Character Counter** — Shows prompt quality (green / yellow / red)
 - **Suno Guidance** — Recommends Weirdness/Style Influence percentages per genre
 
 **Output:**
 - Optimized style prompt (<120 chars recommended)
-- Auto-passes to Lyrics Baker
+- Auto-passes to Lyrics Baker and Melody Baker
 - Version saved for comparison
 
 ---
@@ -113,28 +114,40 @@ A comprehensive, research-backed web application for crafting **style prompts** 
 **Generation Modes:**
 
 **1. Full Generation**
-Provide theme/concept → complete song with structure and lyrics. Use **AI Generate** to auto-create a concept from the style prompt and freeform description (10 rotating creative angles, temperature 1.2 for varied results).
+Provide theme/concept → complete song with structure and lyrics. Use **AI Generate** to auto-create a concept from the style prompt (10 rotating creative angles, temperature 1.2).
 
 **2. Expand / Complete**
 Paste partial lyrics → AI structures and expands.
 
 **3. Section Chain**
-Generate section-by-section (Intro → Verse → Chorus → etc.). Editable progress tracker — click any section to regenerate.
+Generate section-by-section (Intro → Verse → Chorus → etc.). Editable progress tracker.
 
 **4. Scaffolding Mode**
 - **Phase 1:** Generate phonetic template (vowel sounds, syllable patterns)
-- **Phase 2:** Lock melodic motif (review/edit template)
+- **Phase 2:** Lock melodic motif
 - **Phase 3:** Inject semantic lyrics (match syllable count exactly)
 
-Prevents syllabic hyper-compression in Suno V4/V5.
-
 **Advanced:**
-- **Energy Arc Mapping** — Set energy level (Low/Medium/High/Zenith) + repetition count per section
+- **Energy Arc Mapping** — Set energy level + repetition count per section
 - **Meta-Tag Toolbar** — Insert 60+ tags (structure, energy, vocal, harmonic, DSP)
-- **Language Support** — 12 languages with auto-suggestion based on genre (K-Pop → Korean)
-- **Instrumental Mode** — Pure instrumental arrangements with no lyrics
-- **Duration Control** — Short (~2 min) / Medium (~3 min) / Long (~4+ min)
-- **Auto-Generated Title** — Format: `Genre - Song Title - Vocal Type`
+- **Language Support** — 12 languages with auto-suggestion based on genre
+- **Instrumental Mode** — Pure instrumental arrangements
+- **Duration Control** — Short / Medium / Long
+
+---
+
+### Melody Baker *(New in v2.3)*
+
+End-to-end song generation powered by the Suno API:
+
+- **Auto-fill** — Title, style prompt, and lyrics are pulled automatically from Style Baker and Lyrics Baker outputs
+- **Readiness check** — Blocks generation with a clear warning if style or lyrics haven't been baked yet
+- **Model** — Always uses `chirp-v5` (Suno's latest)
+- **Separate API key** — Uses its own Suno API key stored independently
+- **In-browser playback** — Both generated tracks can be played directly in the app
+- **WAV auto-download** — Downloads start automatically after generation; staggered 8 seconds apart to prevent the browser from blocking simultaneous downloads
+- **History integration** — Songs saved to History with task ID; "Download WAV" re-fetches and downloads directly from `cdn1.suno.ai`
+- **Vocal-first reorder** — Vocal keywords are moved to position 2 in the tags string before submitting, ensuring Suno's NLP tokenizer respects the vocal direction regardless of prompt ordering
 
 ---
 
@@ -143,7 +156,7 @@ Prevents syllabic hyper-compression in Suno V4/V5.
 - 🌍 **Bilingual** — English / 中文 with one-click toggle
 - 🎨 **Dark Theme** — Music production aesthetic, Suno orange accent
 - 📱 **Responsive** — Desktop and tablet optimized
-- 💾 **History** — Last 50 generations stored in localStorage
+- 💾 **History** — Last 50 generations stored in localStorage (style, lyrics, songs)
 - 🔒 **Privacy** — API keys never leave your browser
 - 🔄 **Version Comparison** — Compare multiple generations side-by-side
 - 📊 **Parameter Diff** — Highlights what changed between versions
@@ -152,7 +165,7 @@ Prevents syllabic hyper-compression in Suno V4/V5.
 - **OpenAI-Compatible** — GPT, DeepSeek, Groq, Together AI, and more
 - **Google Gemini** — Gemini 2.0 Flash, Gemini Pro
 - **Local LLM** — Ollama, LM Studio (any OpenAI-compatible local server)
-- **Connection Testing** — Verify setup before generation
+- **Suno API** — Via n1n.ai proxy (Melody Baker)
 
 ---
 
@@ -160,10 +173,10 @@ Prevents syllabic hyper-compression in Suno V4/V5.
 
 ### Algorithmic Prompt Formula
 ```
-[Genre/Era] + [Mood] + [Key Instruments (2-3 max)] + [Production] + [BPM] + [Vocal]
+[Genre] + [Vocal Style/Texture] + [Era/Aesthetic] + [Mood] + [Key Instruments] + [Production] + [BPM]
 ```
 
-NLP tokenizers weight left-to-right — genre leads to anchor Suno's style model before emotional coloring is applied.
+NLP tokenizers weight left-to-right — genre leads to anchor the style, and vocal direction appears immediately after so it is never buried by a long instrument list.
 
 ### Prompt Layering (Four Layers)
 1. **Foundation** — Genre, BPM, lead instrument
@@ -176,14 +189,6 @@ NLP tokenizers weight left-to-right — genre leads to anchor Suno's style model
 - **Specificity** — Concrete parameters (128 BPM) > vague terms (fast tempo)
 - **Instrument Limits** — 2–3 per register prevents muddy separation
 - **Genre Limits** — 1–3 genres prevents attention dilution
-
-### Meta-Tag Syntax
-- **Architectural:** `[Intro]`, `[Verse]`, `[Chorus]`, `[Bridge]`
-- **Dynamic:** `[Energy: Low/Medium/High]`, `[Zenith intensity]`
-- **Tension:** `[Build]`, `[Drop]`, `[Gradual swell]`
-- **Vocal:** `[Gritty]`, `[Breathy]`, `[Aggressive delivery]`
-- **Harmonic:** `[Key change]`, `[Circle of fifths]`
-- **DSP:** `(*Low Pass Filter*)`, `(*Reverb*)` — *asterisk prevents singing*
 
 ---
 
@@ -221,14 +226,15 @@ NLP tokenizers weight left-to-right — genre leads to anchor Suno's style model
 
 ### Style Prompt (Keyword Mode)
 ```
-Indie Folk, Melancholic, Acoustic Guitar, Soft Piano, Clean production, 102 BPM, Female Vocal, Breathy
+Indie Folk, Female Vocal, Breathy, Melancholic, Acoustic Guitar, Soft Piano, Clean production, 102 BPM
 ```
+*(Vocal appears 2nd for maximum token weight)*
 
 ### Style Prompt (Blueprint Mode)
 ```
 An Indie Folk track built on sparse acoustic guitar fingerpicking, establishing a melancholic mood from
-the first bar. A soft piano enters at the 8-bar mark with gentle harmonic support. The female vocal is
-breathy and intimate, locked at 102 BPM with clean production that preserves the organic texture.
+the first bar. The female vocal is breathy and intimate throughout. A soft piano enters at the 8-bar
+mark with gentle harmonic support, locked at 102 BPM with clean production.
 ```
 
 ### Lyrics with Energy Arc (Section Chain Mode)
@@ -250,44 +256,28 @@ But I'll keep walking through the rain
 Carrying the beauty and the pain...
 ```
 
-### Scaffolding Mode
-
-**Phase 1 — Phonetic Template:**
-```
-[Verse]
-Ah-oh-ee, ee-ah-oh
-Mmm-ah-ee, oh-ee-oh
-```
-
-**Phase 3 — Semantic Lyrics:**
-```
-[Verse]
-Walking home, feeling low
-Memories, letting go
-```
-*(Each line matches exact syllable count from template)*
-
 ---
 
 ## Project Structure
 
 ```
 Suno-prompt-baker-main/
-├── index.html          Main app (all UI components)
+├── index.html           Main app (all UI components)
 ├── css/
-│   └── style.css       Dark theme, responsive styling
+│   └── style.css        Dark theme, responsive styling
 ├── js/
-│   ├── app.js          Main coordinator, modals, notifications
-│   ├── api.js          API abstraction (OpenAI / Gemini / Local LLM)
-│   ├── style-baker.js  Style generation, templates, validation
-│   ├── lyrics-baker.js Lyrics generation, scaffolding, energy arc
-│   ├── history.js      localStorage history management
-│   ├── i18n.js         Bilingual strings (EN / 中文)
-│   ├── instruments.js  Instrument database by register
-│   ├── meta-tags.js    60+ meta-tag database
-│   ├── templates.js    5 case study templates
-│   ├── validation.js   Conflict/vagueness detection
-│   └── versions.js     A/B comparison backend
+│   ├── app.js           Main coordinator, modals, notifications
+│   ├── api.js           API abstraction (OpenAI / Gemini / Local LLM)
+│   ├── style-baker.js   Style generation, templates, validation
+│   ├── lyrics-baker.js  Lyrics generation, scaffolding, energy arc
+│   ├── melody-baker.js  Song generation via Suno API, WAV download
+│   ├── history.js       localStorage history management
+│   ├── i18n.js          Bilingual strings (EN / 中文)
+│   ├── instruments.js   Instrument database by register
+│   ├── meta-tags.js     60+ meta-tag database
+│   ├── templates.js     5 case study templates
+│   ├── validation.js    Conflict/vagueness detection
+│   └── versions.js      A/B comparison backend
 └── README.md
 ```
 
@@ -299,14 +289,6 @@ Suno-prompt-baker-main/
 - **Pure client-side** — All processing in your browser
 - **LocalStorage** — History and settings persistence
 - **No backend required** — Works from `file://` or any static server
-
----
-
-## Known Limitations
-
-1. **Suno API Integration** — No official public API; workflow is copy-paste based
-2. **Multi-Track Stem Separation** — Outside scope
-3. **Emoji-Driven Semantic Vectors** — Experimental technique, not implemented
 
 ---
 

@@ -43,3 +43,11 @@ Desktop.ini
 # Temporary files
 *.tmp
 *.temp
+
+# Knowledge base (local research documents)
+knowledge base/
+
+# Agent / skills
+.agent/
+.agents/
+skills-lock.json

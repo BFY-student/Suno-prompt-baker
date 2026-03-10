@@ -23,6 +23,7 @@ const App = (() => {
     await I18n.init();
     StyleBaker.init();
     LyricsBaker.init();
+    MelodyBaker.init();
     bindNavigation();
     bindSettings();
     bindHistory();
@@ -58,6 +59,10 @@ const App = (() => {
     document.querySelectorAll('.tab-panel').forEach(panel => {
       panel.classList.toggle('hidden', panel.id !== `panel-${tabName}`);
     });
+    // Auto-refresh Melody Baker when switching to it
+    if (tabName === 'melody') {
+      MelodyBaker.refreshFromBaker();
+    }
   }
 
   function bindLanguageToggle() {
@@ -228,25 +233,44 @@ const App = (() => {
       return;
     }
 
-    container.innerHTML = entries.map(entry => `
-      <div class="history-item" data-id="${entry.id}">
-        <div class="history-meta">
-          <span class="history-type badge-${entry.type}">${entry.type === 'style' ? I18n.t('history.typeStyle') : I18n.t('history.typeLyrics')}</span>
-          <span class="history-time">${History.formatTime(entry.timestamp)}</span>
+    container.innerHTML = entries.map(entry => {
+      const isSong = entry.type === 'song';
+      const badgeLabel = entry.type === 'style'
+        ? I18n.t('history.typeStyle')
+        : entry.type === 'lyrics'
+          ? I18n.t('history.typeLyrics')
+          : I18n.t('history.typeSong');
+      const taskLine = isSong && entry.taskId
+        ? `<div class="history-task-id">Task: ${escapeHtml(entry.taskId)}</div>`
+        : '';
+      const loadLabel = isSong ? I18n.t('history.loadSong') : I18n.t('history.load');
+      return `
+        <div class="history-item" data-id="${entry.id}">
+          <div class="history-meta">
+            <span class="history-type badge-${entry.type}">${badgeLabel}</span>
+            <span class="history-time">${History.formatTime(entry.timestamp)}</span>
+          </div>
+          <div class="history-preview">${escapeHtml(entry.preview)}</div>
+          ${taskLine}
+          <div class="history-actions">
+            <button class="btn btn-sm btn-ghost" onclick="App.loadHistoryEntry('${entry.id}', '${entry.type}')">${loadLabel}</button>
+            <button class="btn btn-sm btn-ghost btn-danger" onclick="App.deleteHistoryEntry('${entry.id}')">${I18n.t('history.delete')}</button>
+          </div>
         </div>
-        <div class="history-preview">${escapeHtml(entry.preview)}</div>
-        <div class="history-actions">
-          <button class="btn btn-sm btn-ghost" onclick="App.loadHistoryEntry('${entry.id}', '${entry.type}')">${I18n.t('history.load')}</button>
-          <button class="btn btn-sm btn-ghost btn-danger" onclick="App.deleteHistoryEntry('${entry.id}')">${I18n.t('history.delete')}</button>
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   function loadHistoryEntry(id, type) {
     const entries = History.getAll();
     const entry = entries.find(e => e.id === id);
     if (!entry) return;
+
+    if (type === 'song') {
+      document.getElementById('history-modal')?.classList.remove('visible');
+      MelodyBaker.downloadSongFromHistory(entry.taskId);
+      return;
+    }
 
     if (type === 'style') {
       StyleBaker.loadFromHistory(entry.content);

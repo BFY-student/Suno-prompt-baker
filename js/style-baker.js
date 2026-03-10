@@ -251,7 +251,9 @@ const StyleBaker = (() => {
 You will receive structured parameters including genre, mood, tempo/BPM, vocal style, vocal texture, instruments organized by register (high/mid/low), production/mix quality, exclusions, era/aesthetic, and a freeform description.
 
 CRITICAL ORDERING RULE - Follow this exact sequence for maximum fidelity:
-[Genre/Era] + [Mood] + [All Key Instruments] + [Production/Mix] + [Exact BPM if provided] + [Vocal Style/Texture]
+[Genre] + [Vocal Style/Texture] + [Era/Aesthetic if provided] + [Mood] + [All Key Instruments] + [Production/Mix] + [Tempo/BPM]
+
+IMPORTANT: Vocal style/texture MUST appear immediately after genre. Suno's NLP assigns token weight by position — vocal direction placed late in a long string is frequently ignored, resulting in wrong gender vocals.
 
 Rules:
 - Output ONLY the style prompt string, nothing else
@@ -262,7 +264,8 @@ Rules:
 - Include ALL instruments the user selected — do not drop or summarize them
 - Include production characteristics for Technical Layer completeness
 - If exclusions are provided, integrate them naturally (e.g., "no vocals" or prefix with [Instrumental])
-- When BPM is specified, include the exact number (e.g., "128 BPM") rather than qualitative terms
+- ALWAYS include tempo in the output: use the exact BPM number when provided (e.g., "128 BPM"), otherwise use the qualitative label (e.g., "mid-tempo", "slow", "uptempo")
+- If Era/Aesthetic is specified, ALWAYS include it prominently near the genre (e.g., "80s Pop", "vintage jazz", "modern R&B")
 - Do not add explanations, headers, or commentary
 - NEVER use the word "skank" or its variants — it is banned by Suno. Use "offbeat strum", "ska rhythm", or "upstroke guitar" instead`;
 
@@ -273,7 +276,7 @@ You will receive structured parameters. Your job is to synthesize them into a na
 Blueprint prompting uses narrative prose to map the temporal timeline. This aligns seamlessly with the transformer's sequential processing.
 
 CRITICAL ORDERING RULE - Describe elements in this priority:
-1. Genre foundation and opening atmosphere/mood
+1. Genre foundation, era/aesthetic (if provided), and opening atmosphere/mood
 2. Initial instrumentation and tempo/BPM — include ALL instruments the user selected
 3. How the arrangement evolves over time (what enters when)
 4. Production characteristics and spatial qualities
@@ -286,6 +289,8 @@ Rules:
 - Describe the sonic evolution chronologically: "The beat begins sparsely with... As the pre-chorus arrives... The chorus explodes with..."
 - Target 100-150 words for optimal transformer processing
 - Always output in English
+- ALWAYS include tempo/BPM: use the exact BPM number when provided, otherwise use the qualitative label naturally in prose (e.g., "at a slow, brooding pace" or "driving at mid-tempo")
+- If Era/Aesthetic is specified, ALWAYS weave it into the opening description (e.g., "rooted in 80s synthwave aesthetics", "evoking vintage 70s soul")
 - Include concrete acoustic parameters (BPM numbers, specific instruments, production terms)
 - If exclusions provided, integrate naturally: "deliberately avoiding vocals" or "no percussion throughout"
 - Do not add meta-commentary or explanations
@@ -547,6 +552,11 @@ Suggest 3-5 instruments per register. Use common instrument names. No explanatio
     // Genre first for token-weight priority
     if (selectedGenres.length) parts.push(`Genre: ${selectedGenres.join(', ')}`);
     if (params.subGenre) parts.push(`Sub-genre/Fusion: ${params.subGenre}`);
+
+    // Vocal SECOND — must be near genre for Suno to respect it (token weight by position)
+    if (selectedVocals.length) parts.push(`Vocal Style: ${selectedVocals.join(', ')}`);
+    if (selectedVocalTextures.length) parts.push(`Vocal Texture: ${selectedVocalTextures.join(', ')}`);
+
     if (params.era) parts.push(`Era/Aesthetic: ${params.era}`);
     if (selectedMoods.length) parts.push(`Mood: ${selectedMoods.join(', ')}`);
 
@@ -558,19 +568,15 @@ Suggest 3-5 instruments per register. Use common instrument names. No explanatio
       if (selectedInstruments.low.length) parts.push(`  Low register: ${selectedInstruments.low.join(', ')}`);
     }
 
-    // NEW: Production/Mix layer
+    // Production/Mix layer
     if (selectedProduction.length) parts.push(`Production/Mix: ${selectedProduction.join(', ')}`);
 
-    // Tempo/BPM
+    // Tempo/BPM - always include tempo label; add exact BPM when provided
     if (params.bpm) {
-      parts.push(`BPM: ${params.bpm}`);
+      parts.push(`Tempo: ${params.tempo} (${params.bpm} BPM)`);
     } else {
       parts.push(`Tempo: ${params.tempo}`);
     }
-
-    // Vocal
-    if (selectedVocals.length) parts.push(`Vocal Style: ${selectedVocals.join(', ')}`);
-    if (selectedVocalTextures.length) parts.push(`Vocal Texture: ${selectedVocalTextures.join(', ')}`); // NEW
 
     // NEW: Exclusions
     if (params.exclusions) parts.push(`Exclusions: ${params.exclusions}`);

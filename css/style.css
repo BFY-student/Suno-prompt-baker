@@ -988,6 +988,20 @@ select {
   background: rgba(52, 211, 153, 0.2);
   color: var(--success);
 }
+.badge-song {
+  background: rgba(168, 85, 247, 0.2);
+  color: var(--accent-purple);
+}
+
+.history-task-id {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .history-time {
   font-size: 0.78rem;

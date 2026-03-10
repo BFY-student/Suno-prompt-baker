@@ -38,6 +38,10 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
         <span data-i18n="nav.lyricsBaker">Lyrics Baker</span>
       </button>
+      <button class="nav-tab" data-tab="melody">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        <span data-i18n="nav.melodyBaker">Melody Baker</span>
+      </button>
     </nav>
 
     <!-- ===== Style Baker Panel ===== -->
@@ -429,6 +433,84 @@
       </div>
     </div>
 
+    <!-- ===== Melody Baker Panel ===== -->
+    <div class="tab-panel hidden" id="panel-melody">
+
+      <!-- API Key -->
+      <div class="section">
+        <div class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span data-i18n="melody.apiKeySection">Suno API Key</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" data-i18n="melody.apiKeyLabel">API Key (n1n.ai)</label>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="password" id="melody-api-key" placeholder="sk-..." style="flex: 1;">
+            <div id="melody-key-dot" style="width: 10px; height: 10px; border-radius: 50%; background: var(--text-muted); flex-shrink: 0; transition: background 0.3s;"></div>
+          </div>
+          <small data-i18n="melody.apiKeyHint" style="display: block; margin-top: 6px; color: var(--text-muted); font-size: 0.82rem;">
+            Separate from the LLM API key. Stored locally only. Same key used in Suno Studio.
+          </small>
+        </div>
+      </div>
+
+      <!-- Readiness Warning -->
+      <div id="melody-readiness-warning" class="hidden" style="margin: 0 0 4px; padding: 14px 16px; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.4); border-radius: var(--radius); color: var(--accent-gold); font-size: 0.88rem; line-height: 1.6;"></div>
+
+      <!-- Song Details -->
+      <div class="section">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+          <div class="section-title" style="margin: 0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            <span data-i18n="melody.detailsSection">Song Details</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="btn-melody-refresh" style="gap: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            <span data-i18n="melody.refreshBtn">Refresh from Baker</span>
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="melody.titleLabel">Song Title</label>
+          <input type="text" id="melody-title" data-i18n-placeholder="melody.titlePlaceholder" placeholder="Auto-filled from Lyrics Baker (editable)">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="melody.styleLabel">Style / Tags</label>
+          <textarea id="melody-style" rows="3" data-i18n-placeholder="melody.stylePlaceholder" placeholder="Auto-filled from Style Baker (editable)" style="resize: vertical;"></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" data-i18n="melody.lyricsLabel">Lyrics</label>
+          <textarea id="melody-lyrics" rows="14" data-i18n-placeholder="melody.lyricsPlaceholder" placeholder="Auto-filled from Lyrics Baker (editable)" style="resize: vertical; font-family: var(--font-mono); font-size: 0.88rem; line-height: 1.7;"></textarea>
+        </div>
+      </div>
+
+      <!-- Model info (auto, no selection needed) -->
+      <div style="margin-bottom: 16px; padding: 10px 14px; background: var(--bg-elevated); border-radius: var(--radius); display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--text-muted);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Model: <strong style="color: var(--accent-purple);">chirp-v5</strong> (Suno v5, latest — fixed)
+      </div>
+
+      <!-- Generate Button -->
+      <button class="btn btn-primary" id="btn-melody-generate" disabled style="width: 100%; padding: 16px; font-size: 1.05rem; gap: 10px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        <span data-i18n="melody.generateBtn">Generate Song</span>
+      </button>
+
+      <!-- Results -->
+      <div class="section result-section hidden" id="melody-results-section">
+        <div class="section-title" data-i18n="melody.resultSection">Generated Song</div>
+
+        <!-- Status Bar -->
+        <div id="melody-status-bar" class="hidden" style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--bg-elevated); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 16px; font-size: 0.875rem;"></div>
+
+        <!-- Tracks -->
+        <div id="melody-tracks"></div>
+      </div>
+
+    </div>
+
     <footer style="text-align: center; padding: 32px 0 24px; color: var(--text-muted); font-size: 0.78rem;">
       Suno Prompt Baker &mdash; All AI outputs in English. API keys stored locally only.
     </footer>
@@ -644,6 +726,79 @@
     </div>
   </div>
 
+  <!-- Melody Baker Styles -->
+  <style>
+    #melody-key-dot.ok { background: var(--success) !important; }
+
+    .melody-track-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+    }
+    .melody-track-card:hover { border-color: var(--accent-purple); }
+
+    .melody-track-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    .melody-track-art {
+      width: 54px; height: 54px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    .melody-track-art-placeholder {
+      width: 54px; height: 54px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent-purple), #6366f1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .melody-track-info { flex: 1; min-width: 0; }
+    .melody-track-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .melody-track-tags  { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .melody-track-meta  { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; }
+    .melody-model-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 0.72rem; padding: 2px 7px;
+      border-radius: 20px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .melody-track-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+    .melody-status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .melody-status-dot.status-queued   { background: var(--warning); animation: melody-pulse 1.4s infinite; }
+    .melody-status-dot.status-progress { background: var(--accent-purple); animation: melody-pulse 0.8s infinite; }
+    .melody-status-dot.status-success  { background: var(--success); }
+    .melody-status-dot.status-error    { background: var(--error); }
+    @keyframes melody-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .btn-spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: melody-spin 0.7s linear infinite;
+      vertical-align: middle;
+    }
+    @keyframes melody-spin { to { transform: rotate(360deg); } }
+  </style>
+
   <!-- Scripts -->
   <script src="js/meta-tags.js"></script>
   <script src="js/templates.js"></script>
@@ -655,6 +810,7 @@
   <script src="js/history.js"></script>
   <script src="js/style-baker.js"></script>
   <script src="js/lyrics-baker.js"></script>
+  <script src="js/melody-baker.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

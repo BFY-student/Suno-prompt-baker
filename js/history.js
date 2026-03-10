@@ -15,14 +15,15 @@ const History = (() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
   }
 
-  function add(type, content) {
+  function add(type, content, extra = {}) {
     const entries = load();
     entries.unshift({
       id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      type, // 'style' or 'lyrics'
+      type, // 'style', 'lyrics', or 'song'
       content,
       preview: content.slice(0, 60).replace(/\n/g, ' '),
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      ...extra
     });
     // Prune to limit
     if (entries.length > MAX_ENTRIES) {
