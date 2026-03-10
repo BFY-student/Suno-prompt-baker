@@ -1,8 +1,8 @@
-# Suno Prompt Baker v2.3
+# Suno Prompt Baker v3.0
 
 A comprehensive, research-backed web application for crafting **style prompts**, **lyrics**, and **generating songs** with [Suno AI](https://suno.com). Implements 19+ advanced features based on peer-reviewed prompt engineering research.
 
-![Version](https://img.shields.io/badge/version-2.3-orange)
+![Version](https://img.shields.io/badge/version-3.0-orange)
 ![Dark Theme](https://img.shields.io/badge/theme-dark-1a1a2e)
 ![No Build](https://img.shields.io/badge/build-none%20required-green)
 ![Bilingual](https://img.shields.io/badge/language-EN%20%7C%20%E4%B8%AD%E6%96%87-orange)
@@ -11,7 +11,7 @@ A comprehensive, research-backed web application for crafting **style prompts**,
 
 ---
 
-## What's New in v2.3
+## What's New in v3.0
 
 - **Melody Baker** — Full song generation tab powered by Suno's Custom Mode API (`chirp-v5`). Auto-fills title, style, and lyrics from previous Style Baker and Lyrics Baker outputs. Generates 2 tracks, streams audio in-browser, and auto-downloads WAV files with staggered timing to avoid browser blocking prompts.
 - **Song History** — Generated songs are saved to History with their task ID. Clicking "Download WAV" in History re-fetches clip IDs and downloads directly from `cdn1.suno.ai`.
@@ -136,7 +136,7 @@ Generate section-by-section (Intro → Verse → Chorus → etc.). Editable prog
 
 ---
 
-### Melody Baker *(New in v2.3)*
+### Melody Baker *(New in v3.0)*
 
 End-to-end song generation powered by the Suno API:
 
